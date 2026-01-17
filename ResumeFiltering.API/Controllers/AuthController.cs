@@ -27,19 +27,28 @@ namespace ResumeFiltering.API.Controllers
         {
             var user = _context.Users.FirstOrDefault(x => x.Email == loginDto.Email && x.Password == loginDto.Password);
 
+           // var user = _context.Users.Find(loginDto.Email);
+
             if (user == null)
                 return Unauthorized("Invalid email or password");
 
 
-            var userroleid= _context.UserRoles.FirstOrDefault(ur => ur.UserId == user.Id).RoleId;
-            var roleName = _context.Roles.FirstOrDefault(r => r.Id == userroleid).Name;
+            var userRole = _context.UserRoles
+        .FirstOrDefault(ur => ur.UserId == user.Id);
+
+            int userRoleId = userRole?.RoleId ?? 2;
+
+            var roleName = _context.Roles
+                .FirstOrDefault(r => r.Id == userRoleId)
+                ?.Name ?? "User";
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim("userId", user.Id.ToString()),
-                new Claim(ClaimTypes.Role, roleName)
-            };
+    new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+    new Claim("userId", user.Id.ToString()),
+    new Claim(ClaimTypes.Role, roleName)
+};
+
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 

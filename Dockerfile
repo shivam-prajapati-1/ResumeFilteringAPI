@@ -1,23 +1,23 @@
-# ================= BUILD STAGE =================
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+# ========== BUILD STAGE ==========
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Solution and project files copy karo
+# Copy solution and project files
 COPY ResumeFiltering.sln ./
 COPY ResumeFiltering.API/ResumeFiltering.API.csproj ResumeFiltering.API/
 COPY ResumeFiltering.Data/ResumeFiltering.Data.csproj ResumeFiltering.Data/
 
-# Restore dependencies
+# Restore
 RUN dotnet restore
 
-# Baaki sab files copy karo
+# Copy remaining files
 COPY . .
 
-# API project publish karo
+# Publish API project
 RUN dotnet publish ResumeFiltering.API/ResumeFiltering.API.csproj -c Release -o out
 
-# ================= RUNTIME STAGE =================
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+# ========== RUNTIME STAGE ==========
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 
 COPY --from=build /app/out .
