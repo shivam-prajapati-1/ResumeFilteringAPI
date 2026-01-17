@@ -1,15 +1,18 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /app
 
-COPY *.csproj ./
+# Project folder copy karo
+COPY ResumeFilteringAPI/*.csproj ./ResumeFilteringAPI/
+WORKDIR /app/ResumeFilteringAPI
+
 RUN dotnet restore
 
-COPY . ./
+COPY ResumeFilteringAPI/. ./
 RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
-COPY --from=build /app/out .
+COPY --from=build /app/ResumeFilteringAPI/out .
 
 EXPOSE 80
 ENTRYPOINT ["dotnet", "ResumeFilteringAPI.dll"]
